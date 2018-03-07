@@ -1,6 +1,7 @@
 package bri;
 
 import java.util.List;
+import java.util.Vector;
 
 public class ServiceRegistry {
 	// cette classe est un registre de services
@@ -8,7 +9,7 @@ public class ServiceRegistry {
 	// un Vector pour cette gestion est pratique
 
 	static {
-		servicesClasses = null;
+		servicesClasses = new Vector<Class<?>>();
 	}
 	private static List<Class<?>> servicesClasses;
 
@@ -19,14 +20,14 @@ public class ServiceRegistry {
 		// si conforme, ajout au vector
 
 		// VERIFICATION
-		TestBean.checkBRi(service);
+		TestBean.validationBean(service);
 		
 		servicesClasses.add(service);
 	}
 		
 // renvoie la classe de service (numService -1)	
-	public static void getServiceClass(int numService) {
-		servicesClasses.get(numService).getSimpleName();
+	public static Class<?> getServiceClass(int numService) {
+		return servicesClasses.get(numService);
 	}
 	
 // liste les activités présentes

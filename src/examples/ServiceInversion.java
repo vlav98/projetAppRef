@@ -6,7 +6,7 @@ import java.net.*;
 import bri.Service;
 
 // rien à ajouter ici
-public class ServiceInversion implements Service {
+public class ServiceInversion implements Service, Serializable {
 	
 	private final Socket client;
 	
@@ -33,6 +33,10 @@ public class ServiceInversion implements Service {
 		}
 	}
 	
+	public Socket getClient(){
+		return client;		
+	}
+
 	protected void finalize() throws Throwable {
 		 client.close(); 
 	}

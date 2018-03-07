@@ -1,75 +1,55 @@
 package bri;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class TestBean {
-	
-	public static void checkBRi(Class<?> service) throws Exception{
-		
-			if(!Modifier.isPublic(String.class.getModifiers()))
-				throw new Exception("Classe non public.");
-			else if(Modifier.isAbstract(service.getModifiers()))
-				throw new Exception("Classe abstract.");
-			
-//			for(Constructor<?> constructeur:service.getConstructors()){
-//				//Constructeur non vide
-//				if(constructeur.getParameterCount() == 0)
-//					throw new Exception("Constructeur sans paramètres");
-//				else if(constructeur.getParameters() != null) {
-//					for(int i=0; i < constructeur.getParameterCount() ; i++){
-//						if(constructeur.getParameterTypes().toString().compareTo("Socket")==0)
-//							throw new Exception("Constructeur qui ne prend pas en paramètre un Socket");
-//					}
-//				}
-//			}
-			
-			try{
-				service.getConstructor(Socket.class);	
-			}catch(NoSuchMethodException e){
-				throw new Exception("Le constructeur ne prend pas en paramètre Socket");
-			}
-						
-			for(Field attribut:service.getDeclaredFields()){
-				String attSock = attribut.getType().toString();
-							
-				try{
-					if(attSock == "Socket"){
-						if(!Modifier.isPrivate(attribut.getModifiers())){
-							throw new Exception("Attribut non private");
-						}
-						else if(!Modifier.isFinal(attribut.getModifiers())){
-							throw new Exception("Attribut non final");
-						}
+// teste si une classe est un bean : public, un constructeur vide,Serializable, 
+//		pas final et get/set standard pour chaque attribut
+
+	public static void validationBean(Class<?> classe) throws Exception {
+		// à rajouter : éliminer ce qui n'est pas une classe
+		int mod = classe.getModifiers();
+		if (!Modifier.isPublic(mod)) throw new Exception ("la classe doit être publique");
+		if (Modifier.isFinal(mod)) throw new Exception ("la classe ne doit pas être final");
+		if (!Arrays.asList(classe.getInterfaces()).contains(java.io.Serializable.class))
+			// controler aussi par héritage, boucle jusqu'à Object...
+			throw new Exception ("la classe doit implémenter java.io.Serializable");
+		try {
+			classe.getConstructor(Socket.class);
+		} catch (NoSuchMethodException e) {
+			throw new Exception ("la classe doit posséder un constructeur Socket");
+		}
+		Field[] fields = classe.getDeclaredFields();
+		String getter, setter;
+		Method get,set;
+		for (Field field : fields){
+			int modifiers = field.getModifiers();
+			if (Modifier.isStatic(modifiers)) continue; // attribut static, non controlé
+			if (!Modifier.isPrivate(modifiers)) 
+				throw new Exception("l'attribut "+field.getName()+ " doit être private");
+			String name = field.getName();
+			name = (name.substring(0, 1)).toUpperCase() + name.substring(1);
+			getter = "get"+name; setter = "set"+name;
+			try {
+				get = classe.getDeclaredMethod(getter);
+				if(!Modifier.isFinal(modifiers))
+				{
+				set = classe.getDeclaredMethod(setter, field.getType());
+					if (!Modifier.isPublic(set.getModifiers())){
+						throw new Exception ("le setter de l'attribut "+field.getName()+" doit être public");
 					}
 				}
-				catch(Exception e){
-					throw new Exception("La classe de service " + service.getSimpleName() 
-					+ " n'a pas d'attribut Socket private final");
-				}
+			} catch (NoSuchMethodException e) {
+				throw new Exception ("il manque le getter ou setter de l'attribut "+field.getName());
 			}
-			Method methode = service.getDeclaredMethod(ServiceRegistry.toStringue(), String.class);
-			if(Modifier.isPublic(methode.getModifiers())){
-				if(Modifier.isStatic(methode.getModifiers())){
-					if(methode.getExceptionTypes() != null){
-						throw new Exception("La méthode " + methode.getName() 
-						+ " n'est pas sans Exception");
-					}
-				}else{
-					throw new Exception("La méthode " + methode.getName() 
-					+ " n'est pas static");
-				}
-			}else{
-				throw new Exception("La méthode " + methode.getName() 
-				+ " n'est pas public");
+			if (!Modifier.isPublic(get.getModifiers())){
+				throw new Exception ("le getter de l'attribut "+field.getName()+" doit être public");
 			}
-					
-//		catch(Exception e){
-//			throw new Exception("L'ajout du service " + service.getSimpleName() + " a échoué.");
-//		}
+			// etc le getter doit renvoyer le type du field, le setter doit renvoyer void,...
+		}
 	}
-	
 }
