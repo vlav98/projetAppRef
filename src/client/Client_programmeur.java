@@ -52,9 +52,9 @@ public class Client_programmeur {
 		// réception/affichage de la question
 			System.out.println(sin.readLine());
 		// saisie clavier/envoie au service de la réponse
-		//	sout.println(clavier.readLine());
-		// réception/affichage de la r�ponse
-		//	System.out.println(sin.readLine());
+			sout.println(clavier.readLine());
+		// réception/affichage de la réponse
+			System.out.println(sin.readLine());
 
 			
 		}

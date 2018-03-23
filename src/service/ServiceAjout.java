@@ -20,7 +20,7 @@ public class ServiceAjout implements Runnable {
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			PrintWriter out = new PrintWriter(client.getOutputStream(),true);
-			out.println("veuillez saisir le nom d'une classe à charger");
+			out.println("Veuillez saisir le nom d'une classe à charger");
 			String classeDemandee = in.readLine();
 			urlcl = new URLClassLoader(new URL[]{new URL("ftp://localhost:2121/classes/")});
 			while (true){

@@ -42,10 +42,8 @@ class Client_amateur {
 //				System.out.println(line.replaceAll("##", "\n"));
 //				sout.println(clavier.readLine());
 //			}while(sortie!=line);
-//			
 		// menu et choix du service
 			line = sin.readLine();
-			System.out.println("Avant les Activités présentes");
 			System.out.println(line.replaceAll("##", "\n"));
 		// saisie/envoie du choix
 			sout.println(clavier.readLine());
@@ -57,7 +55,6 @@ class Client_amateur {
 		// réception/affichage de la réponse
 			System.out.println(sin.readLine());
 			
-//			Scanner clavier2 = new Scanner(System.in);
 			
 			// URLClassLoader sur ftp
 
